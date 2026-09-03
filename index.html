@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Studio</title>
+<link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" href="icons/icon-192.png" />
+<meta name="theme-color" content="#161314" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="mark">T</div>
+    <h1>Studio</h1>
+    <p>Agenda, fiches clientes et suivi des RDV</p>
+    <form id="login-form" autocomplete="on">
+      <label for="login-email">Email</label>
+      <input id="login-email" type="email" autocomplete="username" name="username" />
+      <label for="login-pass">Mot de passe</label>
+      <div style="position:relative;">
+        <input id="login-pass" type="password" autocomplete="current-password" name="password" style="padding-right:44px;" />
+        <button type="button" id="btn-toggle-pass" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--ink-dim); font-size:1.1rem; padding:6px;">👁</button>
+      </div>
+      <div class="error-msg" id="login-error"></div>
+      <button class="btn" id="btn-login" type="submit">Se connecter</button>
+    </form>
+    <button class="link-btn" id="btn-toggle-signup">Première visite ? Créer mon compte</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
+
+  <header class="top-bar">
+    <h2 id="top-bar-title">Agenda</h2>
+    <div id="artist-name-display" class="artist-name"></div>
+    <button class="icon-btn" id="btn-settings">⚙</button>
+  </header>
+
+  <!-- AGENDA -->
+  <main class="screen" id="screen-agenda">
+    <div class="month-nav">
+      <button id="cal-prev">‹</button>
+      <h3 id="cal-label" style="color:var(--ink)"></h3>
+      <button id="cal-next">›</button>
+    </div>
+    <div class="cal-grid" id="cal-dow"></div>
+    <div class="cal-grid" id="cal-grid"></div>
+    <h3 class="day-list-title" id="day-list-title">Aujourd'hui</h3>
+    <div id="day-list"></div>
+  </main>
+
+  <!-- CLIENTS -->
+  <main class="screen hidden" id="screen-clients">
+    <input class="search-bar" id="client-search" type="text" placeholder="Rechercher une cliente…" />
+    <div id="clients-list"></div>
+  </main>
+
+  <!-- FICHE CLIENT (create/edit) -->
+  <main class="screen hidden" id="screen-client-form">
+    <h2 id="client-form-title">Nouvelle cliente</h2>
+    <label>Prénom</label>
+    <input id="cf-prenom" type="text" />
+    <label>Nom</label>
+    <input id="cf-nom" type="text" />
+    <label>Téléphone</label>
+    <input id="cf-tel" type="tel" placeholder="+41 79 123 45 67" />
+    <div id="cf-tel-country" style="font-size:0.8rem; color:var(--ink-dim); margin-top:4px;"></div>
+    <label>Email</label>
+    <input id="cf-email" type="email" />
+    <label>Adresse</label>
+    <input id="cf-adresse" type="text" />
+    <label>Date de naissance</label>
+    <input id="cf-naissance" type="date" />
+    <label>Notes (allergies, préférences…)</label>
+    <textarea id="cf-notes"></textarea>
+    <div class="error-msg" id="client-form-error"></div>
+    <button class="btn" id="btn-save-client">Enregistrer</button>
+    <button class="btn danger hidden" id="btn-delete-client">Supprimer cette cliente</button>
+  </main>
+
+  <!-- RDV FORM (create/edit) -->
+  <main class="screen hidden" id="screen-rdv-form">
+    <h2 id="rdv-form-title">Nouveau RDV</h2>
+
+    <label>Cliente</label>
+    <select id="rf-client"></select>
+    <button class="link-btn" id="rf-new-client" style="margin-top:8px;">+ Nouvelle cliente</button>
+
+    <label>Date</label>
+    <input id="rf-date" type="date" />
+    <label>Heure</label>
+    <div class="row-2">
+      <select id="rf-heure-h"></select>
+      <select id="rf-heure-m"></select>
+    </div>
+    <label>Durée</label>
+    <select id="rf-duree">
+      <option value="30">30 min</option>
+      <option value="60" selected>1h</option>
+      <option value="90">1h30</option>
+      <option value="120">2h</option>
+      <option value="150">2h30</option>
+      <option value="180">3h</option>
+      <option value="240">4h</option>
+      <option value="300">5h</option>
+      <option value="360">6h</option>
+      <option value="480">Journée complète</option>
+    </select>
+
+    <div class="section-title">Le(s) tatouage(s)</div>
+    <div id="rf-tattoos"></div>
+    <button class="link-btn" id="rf-add-tattoo" style="margin-top:4px;">+ Ajouter un tatouage</button>
+
+    <div class="section-title">Tarif</div>
+    <label>Devise</label>
+    <select id="rf-devise">
+      <option value="CHF">CHF</option>
+      <option value="EUR">€</option>
+    </select>
+    <div class="price-line"><span id="rf-total-display">0</span><span class="cur" id="rf-total-cur">CHF</span><span style="color:var(--ink-dim); font-size:0.8rem;">&nbsp;total</span></div>
+
+    <div class="row-2">
+      <div>
+        <label>Acompte versé</label>
+        <input id="rf-acompte" type="number" min="0" step="5" placeholder="50" />
+      </div>
+      <div>
+        <label>Mode de paiement (acompte)</label>
+        <select id="rf-acompte-mode">
+          <option value="">—</option>
+          <option value="especes">Espèces</option>
+          <option value="paypal">PayPal</option>
+          <option value="twint">Twint</option>
+          <option value="virement">Virement bancaire</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="price-line" style="font-size:1.1rem;"><span id="rf-reste-display">0</span><span class="cur" id="rf-reste-cur">CHF</span><span style="color:var(--ink-dim); font-size:0.8rem;">&nbsp;reste à payer</span></div>
+
+    <div class="checkline">
+      <input type="checkbox" id="rf-solde-paye" />
+      <label for="rf-solde-paye">Solde final réglé</label>
+    </div>
+    <label>Mode de paiement (solde)</label>
+    <select id="rf-solde-mode">
+      <option value="">—</option>
+      <option value="especes">Espèces</option>
+      <option value="paypal">PayPal</option>
+      <option value="twint">Twint</option>
+      <option value="virement">Virement bancaire</option>
+    </select>
+
+    <div class="checkline">
+      <input type="checkbox" id="rf-commission-payee" />
+      <label for="rf-commission-payee">Commission studio versée</label>
+    </div>
+
+    <div class="section-title">Consentement</div>
+    <button class="btn secondary small" id="rf-copy-consent" style="width:100%;">Copier le lien de consentement</button>
+    <div class="checkline">
+      <input type="checkbox" id="rf-consent" />
+      <label for="rf-consent">Formulaire de consentement signé (case cochée par la cliente)</label>
+    </div>
+
+    <div class="section-title">Hygiène</div>
+    <label>N° de lot — aiguilles</label>
+    <input id="rf-lot-aiguille" type="text" />
+
+    <label>N° de lot — encre</label>
+    <input id="rf-lot-encre" type="text" />
+
+    <div class="section-title">Feuille de soin</div>
+    <button class="btn secondary small" id="rf-copy-soin" style="width:100%;">Copier le lien de la feuille de soin</button>
+    <div class="checkline">
+      <input type="checkbox" id="rf-soin" />
+      <label for="rf-soin">Feuille de soin envoyée</label>
+    </div>
+
+    <div class="error-msg" id="rdv-form-error"></div>
+    <button class="btn" id="btn-save-rdv">Enregistrer le RDV</button>
+    <button class="btn danger hidden" id="btn-delete-rdv">Supprimer ce RDV</button>
+  </main>
+
+  <!-- COMPTABILITÉ -->
+  <main class="screen hidden" id="screen-compta">
+    <div class="month-nav">
+      <button id="compta-prev">‹</button>
+      <h3 id="compta-label" style="color:var(--ink)"></h3>
+      <button id="compta-next">›</button>
+    </div>
+
+    <div class="card">
+      <div class="card-sub">Recettes du mois</div>
+      <div class="price-line" style="font-size:1.6rem;"><span id="compta-recettes">0</span><span class="cur">CHF</span></div>
+    </div>
+    <div class="card">
+      <div class="card-sub">Commission studio due</div>
+      <div class="price-line"><span id="compta-commission">0</span><span class="cur">CHF</span></div>
+      <div class="card-sub" id="compta-commission-status"></div>
+    </div>
+    <div class="card">
+      <div class="card-sub">Charges du mois (matériel, etc.)</div>
+      <div class="price-line"><span id="compta-charges">0</span><span class="cur">CHF</span></div>
+    </div>
+    <div class="card">
+      <div class="card-sub">Net estimé</div>
+      <div class="price-line" style="font-size:1.4rem; color:var(--ok);"><span id="compta-net">0</span><span class="cur">CHF</span></div>
+    </div>
+
+    <div class="section-title">Ajouter une charge</div>
+    <label>Description</label>
+    <input id="charge-desc" type="text" placeholder="Aiguilles, encre, loyer…" />
+    <div class="row-2">
+      <div>
+        <label>Montant</label>
+        <input id="charge-montant" type="number" min="0" step="1" />
+      </div>
+      <div>
+        <label>Date</label>
+        <input id="charge-date" type="date" />
+      </div>
+    </div>
+    <button class="btn small" id="btn-add-charge" style="width:100%;">Ajouter la charge</button>
+
+    <div class="section-title">Détail des charges</div>
+    <div id="charges-list"></div>
+
+    <div class="section-title">RDV du mois</div>
+    <div id="compta-rdv-list"></div>
+  </main>
+
+  <!-- SETTINGS -->
+  <main class="screen hidden" id="screen-settings">
+    <h2>Réglages</h2>
+    <p>Connectée en tant que <span id="settings-email"></span></p>
+
+    <div class="section-title">Personnalisation</div>
+    <label>Nom d'artiste (affiché dans l'appli)</label>
+    <input id="settings-artist-name" type="text" placeholder="Ex: Anaïs Tattoo" />
+    <label>Couleur principale</label>
+    <input id="settings-accent-color" type="color" value="#c5493a" style="height:44px; padding:4px;" />
+    <label>Commission studio (%)</label>
+    <input id="settings-commission-pct" type="number" min="0" max="100" step="1" placeholder="20" />
+    <button class="btn small" id="btn-save-perso" style="margin-top:12px;">Enregistrer</button>
+
+    <div class="section-title">Lien du formulaire de consentement</div>
+    <p style="font-size:0.85rem;">Colle ici le lien vers ton Google Form. Il sera affiché sur chaque fiche RDV pour que tu puisses le copier et l'envoyer.</p>
+    <input id="settings-consent-link" type="url" placeholder="https://forms.gle/..." />
+    <button class="btn small" id="btn-save-consent-link" style="margin-top:12px;">Enregistrer le lien</button>
+
+    <div class="section-title">Feuille de soin (PDF)</div>
+    <p style="font-size:0.85rem;">Héberge ton PDF où tu veux (Google Drive, WeTransfer...), rends-le accessible via un lien, et colle ce lien ici. Il sera réutilisable pour toutes tes clientes.</p>
+    <input id="settings-care-pdf" type="url" placeholder="https://drive.google.com/..." />
+    <button class="btn small" id="btn-save-care-pdf" style="margin-top:12px;">Enregistrer le lien</button>
+
+    <button class="btn secondary" id="btn-logout" style="margin-top:32px;">Se déconnecter</button>
+  </main>
+
+  <nav class="bottom-nav">
+    <button data-screen="agenda" class="active"><span class="ico">📅</span>Agenda</button>
+    <button data-screen="clients"><span class="ico">👤</span>Clientes</button>
+    <button data-screen="new-rdv"><span class="ico">＋</span>Nouveau RDV</button>
+    <button data-screen="compta"><span class="ico">💰</span>Compta</button>
+  </nav>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
